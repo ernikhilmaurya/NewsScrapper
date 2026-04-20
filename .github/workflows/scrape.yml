@@ -1,0 +1,30 @@
+name: Daily Scraper
+
+on:
+  schedule:
+    - cron: "30 0 * * *" # 6:00 AM IST every day
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run The Hindu spider
+        working-directory: thehindu_scraper
+        run: scrapy crawl thehindu
+
+      - name: Run The Indian Express spider
+        working-directory: thehindu_scraper
+        run: scrapy crawl theindianexpress
