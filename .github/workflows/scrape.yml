@@ -8,6 +8,8 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout code
@@ -23,8 +25,15 @@ jobs:
 
       - name: Run The Hindu spider
         working-directory: thehindu_scraper
-        run: scrapy crawl thehindu
+        run: scrapy crawl thehindu -o ../thehindu_$(date +%Y-%m-%d).json
 
       - name: Run The Indian Express spider
         working-directory: thehindu_scraper
-        run: scrapy crawl theindianexpress
+        run: scrapy crawl theindianexpress -o ../indianexpress_$(date +%Y-%m-%d).json
+
+      - name: Upload scraped data
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-data-${{ github.run_id }}
+          path: "*.json"
+          retention-days: 30
